@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@layer base {
+  /* =========================================================================
+     THEME 1: PREMIUM DARK (Default)
+     Deep navy / near-black canvas, slightly lighter cards, electric blue accent
+  ========================================================================= */
+  :root,
+  [data-theme="dark"] {
+    --bg-canvas: #080D18;
+    --bg-surface: #0F172A;
+    --bg-surface-elevated: #162238;
+    --bg-surface-subtle: #0D1527;
+    --text-primary: #FFFFFF;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-color: #334155;
+    --border-subtle: #1E293B;
+    --accent-primary: #3B82F6;
+    --accent-hover: #2563EB;
+    --accent-surface: rgba(59, 130, 246, 0.15);
+    --accent-text: #60A5FA;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    --header-bg: rgba(8, 13, 24, 0.92);
+  }
+
+  /* =========================================================================
+     THEME 2: CLEAN LIGHT
+     Crisp white/light gray canvas, white cards with clear borders & soft shadows,
+     dark navy text, professional blue accent
+  ========================================================================= */
+  [data-theme="light"] {
+    --bg-canvas: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-surface-elevated: #F1F5F9;
+    --bg-surface-subtle: #F1F5F9;
+    --text-primary: #0A0F1D;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    --border-color: #CBD5E1;
+    --border-subtle: #E2E8F0;
+    --accent-primary: #2563EB;
+    --accent-hover: #1D4ED8;
+    --accent-surface: rgba(37, 99, 235, 0.1);
+    --accent-text: #1D4ED8;
+    --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+    --header-bg: rgba(255, 255, 255, 0.95);
+  }
+
+  /* =========================================================================
+     THEME 3: MIDNIGHT BLUE
+     Rich dark blue canvas, muted blue-gray cards, off-white text, cyan/sky accent
+  ========================================================================= */
+  [data-theme="midnight"] {
+    --bg-canvas: #0B132B;
+    --bg-surface: #152244;
+    --bg-surface-elevated: #1E2D5A;
+    --bg-surface-subtle: #111C3D;
+    --text-primary: #FFFFFF;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --border-color: #2D427B;
+    --border-subtle: #1F2E59;
+    --accent-primary: #0284C7;
+    --accent-hover: #0369A1;
+    --accent-surface: rgba(56, 189, 248, 0.15);
+    --accent-text: #38BDF8;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.55);
+    --header-bg: rgba(11, 19, 43, 0.92);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* Reusable theme utility classes */
+.theme-canvas {
+  background-color: var(--bg-canvas);
+}
+
+.theme-surface {
+  background-color: var(--bg-surface);
+}
+
+.theme-surface-elevated {
+  background-color: var(--bg-surface-elevated);
+}
+
+.theme-surface-subtle {
+  background-color: var(--bg-surface-subtle);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+.theme-border-subtle {
+  border-color: var(--border-subtle);
+}
+
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-text-accent {
+  color: var(--accent-text);
+}
+
+.theme-bg-accent {
+  background-color: var(--accent-primary);
+}
+
+.theme-bg-accent-surface {
+  background-color: var(--accent-surface);
+}
+
+.theme-card-shadow {
+  box-shadow: var(--card-shadow);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
