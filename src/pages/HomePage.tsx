@@ -35,7 +35,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       setSiteData(getSiteData());
     };
     window.addEventListener('site_data_updated', handleUpdate);
-    return () => window.removeEventListener('site_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('site_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   const previewFaqs = siteData.faqs.slice(0, 5);

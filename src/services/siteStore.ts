@@ -32,6 +32,7 @@ export interface SiteData {
   };
   socialLinks: SocialLinks;
   brand: typeof SITE_CONFIG.brand;
+  heroSlides: { url: string; title: string; desc: string; }[];
   whatsappMessages: {
     pakistan: string;
     international: string;
@@ -96,6 +97,38 @@ export const getDefaultSiteData = (): SiteData => {
       SITE_CONFIG.pricing.pakistan.formatted,
       SITE_CONFIG.pricing.international.formatted
     ),
+    heroSlides: [
+      {
+        url: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop',
+        title: 'Faceless Production Pipeline',
+        desc: 'Scriptwriting, audio planning, visual assembly, and thumbnail strategy.'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=1200&auto=format&fit=crop',
+        title: 'Professional Voice & Audio Engineering',
+        desc: 'Recording clear narration, pacing sound design, and audio mastering.'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1533750349077-cdcd106d2312?q=80&w=1200&auto=format&fit=crop',
+        title: 'Digital Content Creation Desk',
+        desc: 'Organizing video assets, timelines, and high-retention editing.'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
+        title: 'Systematic Topic Research & Strategy',
+        desc: 'Evaluating search curiosity, audience intent, and 30-day calendars.'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
+        title: 'Creator Workflow & Collaboration',
+        desc: 'Building standard operating procedures and managing production milestones.'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
+        title: 'Analytics & Data-Driven Improvement',
+        desc: 'Auditing click-through rates, audience retention, and recommendation signals.'
+      }
+    ],
     adminCredentials: DEFAULT_ADMIN_CREDENTIALS,
     lastSavedAt: new Date().toISOString(),
   };
@@ -149,6 +182,7 @@ export const getSiteData = (): SiteData => {
             parsed.pricing?.pakistan?.formatted ?? defaults.pricing.pakistan.formatted,
             parsed.pricing?.international?.formatted ?? defaults.pricing.international.formatted
           ),
+          heroSlides: Array.isArray(parsed.heroSlides) && parsed.heroSlides.length > 0 ? parsed.heroSlides : defaults.heroSlides,
           adminCredentials: parsed.adminCredentials ?? DEFAULT_ADMIN_CREDENTIALS,
           lastSavedAt: parsed.lastSavedAt ?? new Date().toISOString(),
         };

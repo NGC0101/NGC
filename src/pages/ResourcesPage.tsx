@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ResourceArticle } from '../config/siteConfig';
 import { NavPage } from '../components/Header';
 import { WhatsAppButton } from '../components/WhatsAppButton';
-import { getSiteData } from '../services/siteStore';
+import { getSiteData, SiteData } from '../services/siteStore';
 import {
   Search,
   Clock,
@@ -23,15 +23,21 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
-  const [articles, setArticles] = useState<ResourceArticle[]>(getSiteData().articles);
+  const [siteData, setSiteData] = useState<SiteData>(getSiteData());
 
   useEffect(() => {
     const handleUpdate = () => {
-      setArticles(getSiteData().articles);
+      setSiteData(getSiteData());
     };
     window.addEventListener('site_data_updated', handleUpdate);
-    return () => window.removeEventListener('site_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('site_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
+
+  const articles = siteData.articles;
 
   const categories = ['All', 'Fundamentals', 'Production', 'Strategy', 'Scripting', 'Packaging', 'Analytics', 'Compliance'];
 
@@ -168,7 +174,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
           <div>
             <h3 className="text-xl font-extrabold text-[var(--text-primary)]">Ready to master YouTube automation?</h3>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">
-              Join our structured 10-module mentorship program. PKR 50,000 in Pakistan / $200 USD internationally.
+              Join our structured 10-module mentorship program. {siteData.pricing.pakistan.formatted} in Pakistan / {siteData.pricing.international.formatted} internationally.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -203,7 +209,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
 
         {/* Free Content Clarification */}
         <div className="mt-4 p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs text-[var(--text-secondary)] shadow-sm">
-          <strong className="text-[var(--text-primary)]">Notice:</strong> These free articles provide introductory educational information. They are separate from our structured, paid mentorship program (PKR 50,000 in Pakistan / $200 USD internationally).
+          <strong className="text-[var(--text-primary)]">Notice:</strong> These free articles provide introductory educational information. They are separate from our structured, paid mentorship program ({siteData.pricing.pakistan.formatted} in Pakistan / {siteData.pricing.international.formatted} internationally).
         </div>
       </div>
 

@@ -18,7 +18,11 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
       setSiteData(getSiteData());
     };
     window.addEventListener('site_data_updated', handleUpdate);
-    return () => window.removeEventListener('site_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('site_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   const pkFormatted = siteData.pricing.pakistan.formatted;

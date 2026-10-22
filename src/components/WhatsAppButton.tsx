@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { useCountry } from '../context/CountryContext';
 import { MessageCircle, ArrowUpRight } from 'lucide-react';
 
@@ -21,7 +22,13 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 
   if (variant === 'floating') {
     return (
-      <div className="fixed bottom-6 right-6 z-50 flex items-center group">
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="fixed bottom-24 right-6 z-50 flex items-center group"
+    >
         <a
           href={whatsAppUrl}
           target="_blank"
@@ -34,7 +41,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
             WhatsApp Inquiry
           </span>
         </a>
-      </div>
+      </motion.div>
     );
   }
 

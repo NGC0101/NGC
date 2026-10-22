@@ -16,6 +16,7 @@ import { EnrollmentPage } from './pages/EnrollmentPage';
 import { LegalPage } from './pages/LegalPage';
 import { AdminPortal } from './pages/AdminPortal';
 import { ShieldAlert } from 'lucide-react';
+import { Chatbot } from './components/Chatbot';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
@@ -191,6 +192,7 @@ export default function App() {
 
           {/* Accessible Floating WhatsApp Button */}
           <WhatsAppButton variant="floating" />
+          <Chatbot />
         </div>
       </CountryProvider>
     </ThemeProvider>

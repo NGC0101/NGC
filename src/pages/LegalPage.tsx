@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSiteData, SiteData } from '../services/siteStore';
 import { SITE_CONFIG } from '../config/siteConfig';
 import { NavPage } from '../components/Header';
 import { WhatsAppButton } from '../components/WhatsAppButton';
@@ -11,6 +12,19 @@ interface LegalPageProps {
 
 export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'disclaimer' }) => {
   const [activeTab, setActiveTab] = useState<'disclaimer' | 'terms' | 'privacy'>(initialTab);
+  const [siteData, setSiteData] = useState<SiteData>(getSiteData());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSiteData(getSiteData());
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('site_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   return (
     <div className="py-12 sm:py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 transition-colors">
@@ -132,7 +146,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'disclaimer' 
           <section className="space-y-2">
             <h2 className="text-sm font-bold text-[var(--text-primary)]">2. Program Enrollment & Fees</h2>
             <p>
-              The official mentorship fee is PKR 50,000 for students residing in Pakistan and $200 USD for students located outside Pakistan. Payment arrangements and cohort schedules are confirmed directly with our authorized admissions desk via official WhatsApp. Unauthorized third-party representations of fees are invalid.
+              The official mentorship fee is {siteData.pricing.pakistan.formatted} for students residing in Pakistan and {siteData.pricing.international.formatted} for students located outside Pakistan. Payment arrangements and cohort schedules are confirmed directly with our authorized admissions desk via official WhatsApp. Unauthorized third-party representations of fees are invalid.
             </p>
           </section>
 

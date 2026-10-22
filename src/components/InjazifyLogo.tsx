@@ -174,8 +174,9 @@ export const InjazifyLogo: React.FC<InjazifyLogoProps> = ({
           variants={{
             initial: { scale: 1 },
             hover: {
-              scale: 1.15,
-              transition: { type: 'spring', stiffness: 400, damping: 15 },
+              scale: 1.25,
+              rotate: [0, -10, 10, 0],
+              transition: { type: 'spring', stiffness: 400, damping: 10 },
             },
           }}
           className={`relative z-20 font-mono ${config.letter} text-transparent bg-clip-text bg-gradient-to-br from-[#00c6ff] via-purple-500 to-[#0072ff] tracking-wider select-none drop-shadow-sm`}

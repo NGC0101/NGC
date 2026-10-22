@@ -136,7 +136,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
             <span>Select Your Country for Mentorship Pricing</span>
           </span>
           <span className="text-[var(--text-secondary)] font-mono text-[11px] tabular-nums font-semibold">
-            {countryType === 'PK' ? 'PKR 50,000' : countryType === 'INTL' ? '$200 USD' : 'Showing Both'}
+            {countryType === 'PK' ? pricing.pakistanPrice.formatted : countryType === 'INTL' ? pricing.internationalPrice.formatted : 'Showing Both'}
           </span>
         </div>
 

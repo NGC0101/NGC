@@ -63,7 +63,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
   const [loginError, setLoginError] = useState('');
 
   const [siteData, setSiteData] = useState<SiteData>(getSiteData());
-  const [activeTab, setActiveTab] = useState<'articles' | 'pricing' | 'faqs' | 'social' | 'curriculum' | 'security'>('articles');
+  const [activeTab, setActiveTab] = useState<'articles' | 'pricing' | 'faqs' | 'social' | 'curriculum' | 'security' | 'branding'>('articles');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Article State
@@ -765,6 +765,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
 
           <button
             type="button"
+            onClick={() => setActiveTab('branding')}
+            className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'branding'
+                ? 'bg-[var(--accent-primary)] text-white shadow-md'
+                : 'bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-subtle)] text-[var(--text-secondary)] border border-[var(--border-color)]'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>Site Branding</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('security')}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'security'
@@ -1189,6 +1202,85 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+
+        {/* =========================================================
+            TAB: SITE BRANDING
+        ========================================================= */}
+        {activeTab === 'branding' && (
+          <div className="space-y-6">
+            <div className="max-w-3xl bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm space-y-6">
+              <div>
+                <h2 className="text-lg font-bold tracking-tight">Site Branding</h2>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Update headlines, trust statements, and mission.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
+                    Brand Name
+                  </label>
+                  <input
+                    type="text"
+                    value={siteData.brand.name}
+                    onChange={(e) => setSiteData({ ...siteData, brand: { ...siteData.brand, name: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--bg-canvas)] border border-[var(--border-color)] text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
+                    Homepage Headline
+                  </label>
+                  <input
+                    type="text"
+                    value={siteData.brand.homepageHeadline}
+                    onChange={(e) => setSiteData({ ...siteData, brand: { ...siteData.brand, homepageHeadline: e.target.value } })}
+                    className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--bg-canvas)] border border-[var(--border-color)] text-sm"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => { saveSiteData(siteData); triggerToast('Branding updated'); }}
+                className="px-4 py-2 rounded-xl bg-[var(--accent-primary)] text-white text-xs font-semibold"
+              >
+                Save Branding
+              </button>
+            </div>
+
+            <div className="max-w-3xl bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm space-y-4">
+              <h3 className="text-lg font-bold">Hero Slideshow</h3>
+              {siteData.heroSlides.map((slide, index) => (
+                <div key={index} className="p-4 bg-[var(--bg-canvas)] rounded-lg space-y-2 border border-[var(--border-color)]">
+                   <input value={slide.url} placeholder="Image URL" onChange={(e) => {
+                     const newSlides = [...siteData.heroSlides];
+                     newSlides[index].url = e.target.value;
+                     setSiteData({ ...siteData, heroSlides: newSlides });
+                   }} className="w-full px-2 py-1 rounded border border-[var(--border-color)] text-xs" />
+                   <input value={slide.title} placeholder="Title" onChange={(e) => {
+                     const newSlides = [...siteData.heroSlides];
+                     newSlides[index].title = e.target.value;
+                     setSiteData({ ...siteData, heroSlides: newSlides });
+                   }} className="w-full px-2 py-1 rounded border border-[var(--border-color)] text-xs" />
+                   <input value={slide.desc} placeholder="Description" onChange={(e) => {
+                     const newSlides = [...siteData.heroSlides];
+                     newSlides[index].desc = e.target.value;
+                     setSiteData({ ...siteData, heroSlides: newSlides });
+                   }} className="w-full px-2 py-1 rounded border border-[var(--border-color)] text-xs" />
+                   <button type="button" onClick={() => {
+                     setSiteData({ ...siteData, heroSlides: siteData.heroSlides.filter((_, i) => i !== index) });
+                   }} className="text-red-500 text-xs">Delete</button>
+                </div>
+              ))}
+              <button type="button" onClick={() => {
+                setSiteData({ ...siteData, heroSlides: [...siteData.heroSlides, { url: '', title: '', desc: '' }] });
+              }} className="px-3 py-1 rounded-lg bg-[var(--accent-primary)] text-white text-xs">Add Slide</button>
             </div>
           </div>
         )}

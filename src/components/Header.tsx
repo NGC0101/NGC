@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { SITE_CONFIG } from '../config/siteConfig';
+import React, { useState, useEffect } from 'react';
+import { getSiteData } from '../services/siteStore';
 import { CountrySelector } from './CountrySelector';
 import { ThemeSelector } from './ThemeSelector';
 import { BrandSymbol } from './BrandSymbol';
@@ -26,6 +26,15 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [brandName, setBrandName] = useState(getSiteData().brand.name);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setBrandName(getSiteData().brand.name);
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    return () => window.removeEventListener('site_data_updated', handleUpdate);
+  }, []);
 
   const navLinks: { id: NavPage; label: string }[] = [
     { id: 'home', label: 'Home' },
@@ -58,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           >
             <BrandSymbol size="md" />
             <span className="text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 transition-colors group-hover:text-[var(--accent-text)]">
-              {SITE_CONFIG.brand.name}
+              {brandName}
             </span>
           </button>
 
