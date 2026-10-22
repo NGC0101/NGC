@@ -79,7 +79,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
     setSiteData(updated);
     saveSiteData(updated);
     setEditingArticle(null);
-    triggerSuccess('Article saved and published successfully!');
+    triggerSuccess('Article saved and published successfully in real time!');
   };
 
   const handleDeleteArticle = (id: string) => {
@@ -88,7 +88,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
     const updated = { ...siteData, articles: updatedArticles };
     setSiteData(updated);
     saveSiteData(updated);
-    triggerSuccess('Article deleted.');
+    triggerSuccess('Article deleted successfully.');
   };
 
   // FAQ handlers
@@ -107,7 +107,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
     setSiteData(updated);
     saveSiteData(updated);
     setEditingFaq(null);
-    triggerSuccess('FAQ saved successfully!');
+    triggerSuccess('FAQ saved successfully in real time!');
   };
 
   const handleDeleteFaq = (id: string) => {
@@ -116,25 +116,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
     const updated = { ...siteData, faqs: updatedFaqs };
     setSiteData(updated);
     saveSiteData(updated);
-    triggerSuccess('FAQ deleted.');
+    triggerSuccess('FAQ deleted successfully.');
   };
 
   // Pricing handler
   const handleSavePricing = (e: React.FormEvent) => {
     e.preventDefault();
-    const updated = { ...siteData };
-    setSiteData(updated);
-    saveSiteData(updated);
-    triggerSuccess('Pricing updated successfully!');
+    saveSiteData(siteData);
+    triggerSuccess('Pricing updated successfully in real time!');
   };
 
   // Social Links handler
   const handleSaveSocial = (e: React.FormEvent) => {
     e.preventDefault();
-    const updated = { ...siteData };
-    setSiteData(updated);
-    saveSiteData(updated);
-    triggerSuccess('Social links & channels updated successfully!');
+    saveSiteData(siteData);
+    triggerSuccess('Social links & channels updated successfully in real time!');
   };
 
   if (!isAuthenticated) {
@@ -230,7 +226,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                 Secure Active
               </span>
             </div>
-            <p className="text-xs text-[var(--text-secondary)]">Manage articles, pricing, curriculum, FAQs & social channels</p>
+            <p className="text-xs text-[var(--text-secondary)]">Manage articles, pricing, curriculum, FAQs & social channels in real time</p>
           </div>
         </div>
 
@@ -336,8 +332,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold tracking-tight">Educational Articles & Guides</h2>
-                <p className="text-xs text-[var(--text-secondary)]">Create, edit, attach cover images, and embed video links for full-screen articles.</p>
+                <h2 className="text-lg font-bold tracking-tight">Educational Articles & Blogging Studio</h2>
+                <p className="text-xs text-[var(--text-secondary)]">Create, edit, attach multiple images, and embed video links for full-screen articles.</p>
               </div>
               <button
                 type="button"
@@ -348,10 +344,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                     slug: `article-${Date.now()}`,
                     title: '',
                     excerpt: '',
-                    readTime: '5 min read',
+                    readTime: '6 min read',
                     publishedDate: 'October 2026',
                     category: 'Fundamentals',
-                    imageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop',
+                    images: [
+                      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1533750349077-cdcd106d2312?q=80&w=1200&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop'
+                    ],
                     videoUrl: '',
                     content: [''],
                     keyTakeaways: [''],
@@ -366,53 +366,54 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
 
             {/* Articles List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {siteData.articles.map((article) => (
-                <div key={article.id} className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between">
-                  <div>
-                    {article.imageUrl && (
+              {siteData.articles.map((article) => {
+                const coverImg = (article as any).images?.[0] || (article as any).imageUrl || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop';
+                return (
+                  <div key={article.id} className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between">
+                    <div>
                       <div className="h-40 w-full overflow-hidden bg-[var(--bg-surface-subtle)] relative">
-                        <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
+                        <img src={coverImg} alt={article.title} className="w-full h-full object-cover" />
                         <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">
                           {article.category}
                         </span>
                       </div>
-                    )}
-                    <div className="p-5 space-y-2">
-                      <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                        <span>{article.readTime}</span>
-                        <span>{article.publishedDate}</span>
+                      <div className="p-5 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
+                          <span>{article.readTime}</span>
+                          <span>{article.publishedDate}</span>
+                        </div>
+                        <h3 className="font-bold text-sm text-[var(--text-primary)] line-clamp-2">{article.title}</h3>
+                        <p className="text-xs text-[var(--text-secondary)] line-clamp-2">{article.excerpt}</p>
                       </div>
-                      <h3 className="font-bold text-sm text-[var(--text-primary)] line-clamp-2">{article.title}</h3>
-                      <p className="text-xs text-[var(--text-secondary)] line-clamp-2">{article.excerpt}</p>
                     </div>
-                  </div>
 
-                  <div className="p-5 pt-0 flex items-center justify-between border-t border-[var(--border-subtle)] mt-4">
-                    <span className="text-[11px] font-mono text-[var(--accent-text)]">/{article.slug}</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsNewArticle(false);
-                          setEditingArticle(article);
-                        }}
-                        className="p-2 rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--accent-surface)] text-[var(--text-primary)] hover:text-[var(--accent-text)] transition-colors cursor-pointer"
-                        title="Edit Article"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteArticle(article.id)}
-                        className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors cursor-pointer"
-                        title="Delete Article"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <div className="p-5 pt-0 flex items-center justify-between border-t border-[var(--border-subtle)] mt-4">
+                      <span className="text-[11px] font-mono text-[var(--accent-text)]">/{article.slug}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsNewArticle(false);
+                            setEditingArticle(article);
+                          }}
+                          className="p-2 rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--accent-surface)] text-[var(--text-primary)] hover:text-[var(--accent-text)] transition-colors cursor-pointer"
+                          title="Edit Article"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteArticle(article.id)}
+                          className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors cursor-pointer"
+                          title="Delete Article"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -421,7 +422,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
         {activeTab === 'pricing' && (
           <div className="max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
             <h2 className="text-lg font-bold tracking-tight mb-2">Tuition Fee Management</h2>
-            <p className="text-xs text-[var(--text-secondary)] mb-6">Update the official mentorship pricing for Pakistan and international students.</p>
+            <p className="text-xs text-[var(--text-secondary)] mb-6">Update official mentorship pricing for Pakistan and international students in real time.</p>
 
             <form onSubmit={handleSavePricing} className="space-y-6">
               <div className="p-4 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] space-y-4">
@@ -434,7 +435,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                       value={siteData.pricing.pakistan.amount}
                       onChange={(e) => {
                         const val = Number(e.target.value);
-                        setData('pricing.pakistan.amount', val);
+                        setSiteData(prev => ({
+                          ...prev,
+                          pricing: {
+                            ...prev.pricing,
+                            pakistan: { ...prev.pricing.pakistan, amount: val, formatted: `PKR ${val.toLocaleString()}` }
+                          }
+                        }));
                       }}
                       className="w-full px-3 py-2 rounded-lg bg-[var(--bg-canvas)] border border-[var(--border-color)] text-sm"
                     />
@@ -469,7 +476,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                         const val = Number(e.target.value);
                         setSiteData(prev => ({
                           ...prev,
-                          pricing: { ...prev.pricing, international: { ...prev.pricing.international, amount: val } }
+                          pricing: {
+                            ...prev.pricing,
+                            international: { ...prev.pricing.international, amount: val, formatted: `$${val} USD` }
+                          }
                         }));
                       }}
                       className="w-full px-3 py-2 rounded-lg bg-[var(--bg-canvas)] border border-[var(--border-color)] text-sm"
@@ -510,7 +520,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold tracking-tight">Frequently Asked Questions</h2>
-                <p className="text-xs text-[var(--text-secondary)]">Manage admissions, pricing, and mentorship FAQs.</p>
+                <p className="text-xs text-[var(--text-secondary)]">Manage admissions, pricing, and mentorship FAQs in real time.</p>
               </div>
               <button
                 type="button"
@@ -569,7 +579,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
         {activeTab === 'social' && (
           <div className="max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
             <h2 className="text-lg font-bold tracking-tight mb-2">Footer Social Channels & Links</h2>
-            <p className="text-xs text-[var(--text-secondary)] mb-6">Configure official social media URLs rendered in the website footer.</p>
+            <p className="text-xs text-[var(--text-secondary)] mb-6">Configure official social media URLs rendered in the website footer in real time.</p>
 
             <form onSubmit={handleSaveSocial} className="space-y-4">
               <div>
@@ -722,39 +732,63 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Cover Image URL (Unsplash / Direct Link)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={(editingArticle as any).imageUrl || ''}
-                    onChange={(e) => setEditingArticle({ ...editingArticle, imageUrl: e.target.value } as any)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
-                  />
-                  <div className="w-10 h-10 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] flex items-center justify-center shrink-0">
-                    <ImageIcon className="w-5 h-5 text-[var(--text-secondary)]" />
-                  </div>
-                </div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Dedicated Picture 1 (Cover URL)</label>
+                <input
+                  type="url"
+                  value={(editingArticle as any).images?.[0] || ''}
+                  onChange={(e) => {
+                    const imgs = [...((editingArticle as any).images || ['', '', ''])];
+                    imgs[0] = e.target.value;
+                    setEditingArticle({ ...editingArticle, images: imgs } as any);
+                  }}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Embedded Video Link (YouTube Embed URL or Watch URL)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={(editingArticle as any).videoUrl || ''}
-                    onChange={(e) => setEditingArticle({ ...editingArticle, videoUrl: e.target.value } as any)}
-                    placeholder="https://www.youtube.com/embed/..."
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
-                  />
-                  <div className="w-10 h-10 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] flex items-center justify-center shrink-0">
-                    <Video className="w-5 h-5 text-[var(--text-secondary)]" />
-                  </div>
-                </div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Dedicated Picture 2 URL</label>
+                <input
+                  type="url"
+                  value={(editingArticle as any).images?.[1] || ''}
+                  onChange={(e) => {
+                    const imgs = [...((editingArticle as any).images || ['', '', ''])];
+                    imgs[1] = e.target.value;
+                    setEditingArticle({ ...editingArticle, images: imgs } as any);
+                  }}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Excerpt / Summary</label>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Dedicated Picture 3 URL</label>
+                <input
+                  type="url"
+                  value={(editingArticle as any).images?.[2] || ''}
+                  onChange={(e) => {
+                    const imgs = [...((editingArticle as any).images || ['', '', ''])];
+                    imgs[2] = e.target.value;
+                    setEditingArticle({ ...editingArticle, images: imgs } as any);
+                  }}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Embedded Video Masterclass URL (YouTube Embed URL)</label>
+                <input
+                  type="url"
+                  value={(editingArticle as any).videoUrl || ''}
+                  onChange={(e) => setEditingArticle({ ...editingArticle, videoUrl: e.target.value } as any)}
+                  placeholder="https://www.youtube.com/embed/..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)] text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Excerpt / Motivational Summary</label>
                 <textarea
                   value={editingArticle.excerpt}
                   onChange={(e) => setEditingArticle({ ...editingArticle, excerpt: e.target.value })}
@@ -765,7 +799,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Article Content Paragraphs (Comma or newline separated)</label>
+                <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">Article Content Paragraphs (Paragraphs separated by double line break)</label>
                 <textarea
                   value={Array.isArray(editingArticle.content) ? editingArticle.content.join('\n\n') : editingArticle.content}
                   onChange={(e) => setEditingArticle({ ...editingArticle, content: e.target.value.split('\n\n') })}
