@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
     { id: 'mentorship', label: 'Mentorship' },
     { id: 'curriculum', label: 'Curriculum' },
     { id: 'pricing', label: 'Pricing' },
-    { id: 'resources', label: 'Resources' },
+    { id: 'resources', label: 'Articles' },
     { id: 'faq', label: 'FAQ' },
     { id: 'contact', label: 'Contact' },
   ];
