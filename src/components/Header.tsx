@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useCountry } from '../context/CountryContext';
 import { SITE_CONFIG } from '../config/siteConfig';
 import { CountrySelector } from './CountrySelector';
 import { ThemeSelector } from './ThemeSelector';
@@ -27,7 +26,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { countryType } = useCountry();
 
   const navLinks: { id: NavPage; label: string }[] = [
     { id: 'home', label: 'Home' },
@@ -56,10 +54,10 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           <button
             type="button"
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] rounded-lg cursor-pointer whitespace-nowrap shrink-0 group"
+            className="flex items-center gap-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] rounded-xl py-1.5 px-2 -ml-2 hover:bg-[var(--bg-surface-elevated)]/60 active:scale-[0.98] transition-all duration-150 cursor-pointer whitespace-nowrap shrink-0 group"
           >
             <BrandSymbol size="md" />
-            <span className="text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0">
+            <span className="text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 transition-colors group-hover:text-[var(--accent-text)]">
               {SITE_CONFIG.brand.name}
             </span>
           </button>
@@ -85,34 +83,29 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             })}
           </nav>
 
-          {/* Zone 3: Theme Selector + Country Quick Selector + 1 Primary CTA */}
+          {/* Zone 3: Theme Selector + 1 Primary CTA */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             {/* Visual Theme Selector */}
             <ThemeSelector variant="compact" />
-
-            {/* Quick Country Switcher Pill */}
-            <div className="hidden sm:block">
-              <CountrySelector variant="compact" />
-            </div>
 
             {/* Primary Action Button (Desktop/Tablet) */}
             <button
               type="button"
               onClick={() => handleNavClick('enrollment')}
-              className="hidden sm:flex items-center gap-1.5 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[var(--accent-primary)] hover:opacity-90 rounded-xl transition-all shadow-md border border-transparent whitespace-nowrap shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]"
+              className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 text-xs font-semibold text-white bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-hover)] hover:brightness-110 active:scale-[0.97] rounded-lg transition-all duration-150 shadow-sm hover:shadow-[0_4px_16px_rgba(20,184,166,0.3)] border border-white/20 whitespace-nowrap shrink-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-canvas)] group"
             >
               <span>Join the Mentorship</span>
-              <ArrowRight className="w-3.5 h-3.5 text-cyan-200" />
+              <ArrowRight className="w-3 h-3 text-cyan-100 transition-transform duration-200 group-hover:translate-x-0.5" strokeWidth={2.2} />
             </button>
 
             {/* Mobile menu button */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] cursor-pointer"
+              className="lg:hidden h-8 w-8 flex items-center justify-center rounded-lg bg-[var(--bg-surface-subtle)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-color)] hover:border-[var(--accent-primary)]/40 text-[var(--text-secondary)] hover:text-[var(--text-primary)] active:scale-95 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] cursor-pointer shadow-xs"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" strokeWidth={2.2} /> : <Menu className="w-4 h-4" strokeWidth={2.2} />}
             </button>
           </div>
         </div>
@@ -125,7 +118,6 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           {/* Controls Bar in Mobile Menu */}
           <div className="flex flex-col gap-3 mb-4 pt-1">
             <ThemeSelector variant="segmented" />
-            <CountrySelector variant="segmented" />
           </div>
 
           <div className="flex flex-col space-y-1 text-sm font-medium">

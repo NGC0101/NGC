@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { SITE_CONFIG } from '../config/siteConfig';
 import { useCountry } from '../context/CountryContext';
 import { NavPage } from '../components/Header';
-import { CountrySelector } from '../components/CountrySelector';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import {
   MessageCircle,
@@ -64,13 +63,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
               Connect directly with our educational coordinators to ask questions regarding curriculum modules, upcoming start dates, delivery format, and verified tuition payment instructions.
             </p>
 
-            {/* Country Selector in Contact */}
-            <div className="pt-4 border-t border-[var(--border-subtle)]">
-              <span className="text-xs sm:text-sm text-[var(--text-secondary)] block mb-2 font-semibold">
-                Adjust country for tailored message & tuition info:
-              </span>
-              <CountrySelector variant="segmented" />
-            </div>
+
 
             {/* Optional Custom Question Box to append to message */}
             <div className="mt-5 pt-4 border-t border-[var(--border-subtle)]">

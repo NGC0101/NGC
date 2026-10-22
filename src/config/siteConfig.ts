@@ -33,6 +33,7 @@ export interface ResourceArticle {
   images: string[];
   seoDescription?: string;
   seoKeywords?: string[];
+  videoUrl?: string;
 }
 
 export const SITE_CONFIG = {

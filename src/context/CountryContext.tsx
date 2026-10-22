@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import {
   CountryCode,
   PricingResult,
@@ -7,7 +7,6 @@ import {
   buildWhatsAppUrl,
   normalizeCountry,
 } from '../utils/pricing';
-import { SITE_CONFIG } from '../config/siteConfig';
 
 interface CountryContextType {
   selectedCountry: string; // 'PK', 'INTL', or specific country code like 'US'
@@ -28,8 +27,10 @@ const CountryContext = createContext<CountryContextType | undefined>(undefined);
 export const CountryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedCountry, setSelectedCountryState] = useState<string>(() => {
     try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      if (stored) return stored;
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        const stored = sessionStorage.getItem(STORAGE_KEY);
+        if (stored) return stored;
+      }
     } catch {
       // ignore
     }
@@ -37,28 +38,57 @@ export const CountryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
+  const [dataVersion, setDataVersion] = useState(0);
+
+  // Synchronize with real-time site updates from admin portal
+  useEffect(() => {
+    const handleUpdate = () => {
+      setDataVersion((v) => v + 1);
+    };
+
+    window.addEventListener('site_data_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('site_data_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, selectedCountry);
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        sessionStorage.setItem(STORAGE_KEY, selectedCountry);
+      }
     } catch {
       // ignore
     }
   }, [selectedCountry]);
 
   const countryType = useMemo(() => normalizeCountry(selectedCountry), [selectedCountry]);
-  const pricing = useMemo(() => getPricing(selectedCountry), [selectedCountry]);
-  const whatsAppMessage = useMemo(() => getWhatsAppMessage(selectedCountry), [selectedCountry]);
-  const whatsAppUrl = useMemo(() => buildWhatsAppUrl(selectedCountry), [selectedCountry]);
+  
+  // Re-evaluate pricing, message, and URL whenever selectedCountry OR dataVersion changes
+  const pricing = useMemo(() => {
+    // dataVersion dependency triggers recalculation on site_data_updated
+    return getPricing(selectedCountry);
+  }, [selectedCountry, dataVersion]);
 
-  const openWhatsApp = (customSuffix?: string) => {
+  const whatsAppMessage = useMemo(() => {
+    return getWhatsAppMessage(selectedCountry);
+  }, [selectedCountry, dataVersion]);
+
+  const whatsAppUrl = useMemo(() => {
+    return buildWhatsAppUrl(selectedCountry);
+  }, [selectedCountry, dataVersion]);
+
+  const openWhatsApp = useCallback((customSuffix?: string) => {
     const url = buildWhatsAppUrl(selectedCountry, customSuffix);
     window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  }, [selectedCountry]);
 
-  const setSelectedCountry = (country: string) => {
+  const setSelectedCountry = useCallback((country: string) => {
     setSelectedCountryState(country);
-  };
+  }, []);
 
   return (
     <CountryContext.Provider

@@ -1,5 +1,4 @@
-import React from 'react';
-import { SITE_CONFIG } from '../config/siteConfig';
+import React, { useState, useEffect } from 'react';
 import { useCountry } from '../context/CountryContext';
 import { NavPage } from '../components/Header';
 import { CountrySelector } from '../components/CountrySelector';
@@ -9,6 +8,8 @@ import {
   CheckCircle2,
   BookOpen,
 } from 'lucide-react';
+import { getSiteData } from '../services/siteStore';
+import { CurriculumModule } from '../config/siteConfig';
 
 interface MentorshipPageProps {
   onNavigate: (page: NavPage) => void;
@@ -16,6 +17,19 @@ interface MentorshipPageProps {
 
 export const MentorshipPage: React.FC<MentorshipPageProps> = ({ onNavigate }) => {
   const { countryType } = useCountry();
+  const [siteData, setSiteData] = useState(getSiteData());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSiteData(getSiteData());
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    return () => window.removeEventListener('site_data_updated', handleUpdate);
+  }, []);
+
+  const curriculum = siteData.curriculum;
+  const pkFormatted = siteData.pricing.pakistan.formatted;
+  const intlFormatted = siteData.pricing.international.formatted;
 
   return (
     <div className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-colors">
@@ -119,72 +133,13 @@ export const MentorshipPage: React.FC<MentorshipPageProps> = ({ onNavigate }) =>
         </div>
 
         <div className="space-y-4">
-          {SITE_CONFIG.curriculumModules.map((module, i) => (
+          {curriculum.map((module, i) => (
             <ModuleCard key={module.id} module={module} initiallyOpen={i === 0} />
           ))}
         </div>
       </div>
 
-      {/* Transparent Mentorship Enrollment Block (Completely Phone-Number Free) */}
-      <div className="p-8 sm:p-10 rounded-2xl bg-[var(--bg-surface)] border border-[var(--accent-primary)]/30 shadow-xl relative overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          <div className="lg:col-span-7 space-y-4">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)] block">
-              Enrollment Inquiries
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] tracking-tight">
-              Review Tuition & Inquire Directly on WhatsApp
-            </h3>
-            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-              We maintain open communication with all prospective students. Before committing to enrollment, you can review the official fee for your region, ask questions about upcoming cohort schedules, and confirm the delivery format.
-            </p>
 
-            <div className="pt-2">
-              <CountrySelector variant="segmented" />
-            </div>
-
-            <div className="pt-3 flex items-center gap-3">
-              <WhatsAppButton label="Ask About Mentorship" variant="primary" className="px-6 py-3" />
-              <button
-                type="button"
-                onClick={() => onNavigate('pricing')}
-                className="px-5 py-3 rounded-xl bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-elevated)] text-xs sm:text-sm border border-[var(--border-color)] cursor-pointer"
-              >
-                <span>Full Pricing Details</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="lg:col-span-5 p-6 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-color)]">
-            <h4 className="text-xs font-semibold uppercase text-[var(--text-secondary)] mb-2">
-              Official Program Tuition
-            </h4>
-            <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-[var(--text-primary)] font-medium block">Pakistan Fee</span>
-                  <span className="text-[11px] text-[var(--text-muted)]">Local residents</span>
-                </div>
-                <span className="font-mono font-bold text-[var(--text-primary)] text-sm">PKR 50,000</span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-[var(--text-primary)] font-medium block">International Fee</span>
-                  <span className="text-[11px] text-[var(--text-muted)]">Outside Pakistan</span>
-                </div>
-                <span className="font-mono font-bold text-[var(--text-primary)] text-sm">$200 USD</span>
-              </div>
-            </div>
-
-            <p className="text-[11px] text-[var(--text-muted)] mt-4 leading-relaxed">
-              No unconfirmed enrollment deadlines or false scarcity claims. Direct discussion via verified WhatsApp admissions desk.
-            </p>
-          </div>
-
-        </div>
-      </div>
 
     </div>
   );

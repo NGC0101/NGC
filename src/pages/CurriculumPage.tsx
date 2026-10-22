@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { SITE_CONFIG } from '../config/siteConfig';
+import React, { useState, useEffect } from 'react';
 import { NavPage } from '../components/Header';
 import { ModuleCard } from '../components/ModuleCard';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import { Filter } from 'lucide-react';
+import { getSiteData } from '../services/siteStore';
+import { CurriculumModule } from '../config/siteConfig';
 
 interface CurriculumPageProps {
   onNavigate: (page: NavPage) => void;
@@ -11,8 +12,17 @@ interface CurriculumPageProps {
 
 export const CurriculumPage: React.FC<CurriculumPageProps> = ({ onNavigate }) => {
   const [filterPhase, setFilterPhase] = useState<'all' | 'foundation' | 'production' | 'growth'>('all');
+  const [curriculum, setCurriculum] = useState<CurriculumModule[]>(getSiteData().curriculum);
 
-  const filteredModules = SITE_CONFIG.curriculumModules.filter((m) => {
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCurriculum(getSiteData().curriculum);
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    return () => window.removeEventListener('site_data_updated', handleUpdate);
+  }, []);
+
+  const filteredModules = curriculum.filter((m) => {
     if (filterPhase === 'foundation') return m.id <= 3;
     if (filterPhase === 'production') return m.id >= 4 && m.id <= 6;
     if (filterPhase === 'growth') return m.id >= 7;

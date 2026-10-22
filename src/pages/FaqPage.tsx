@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { SITE_CONFIG } from '../config/siteConfig';
+import React, { useState, useEffect } from 'react';
 import { NavPage } from '../components/Header';
 import { FaqAccordion } from '../components/FaqAccordion';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import { Search } from 'lucide-react';
+import { getSiteData } from '../services/siteStore';
+import { FAQItem } from '../config/siteConfig';
 
 interface FaqPageProps {
   onNavigate: (page: NavPage) => void;
@@ -12,10 +13,19 @@ interface FaqPageProps {
 export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [faqs, setFaqs] = useState<FAQItem[]>(getSiteData().faqs);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setFaqs(getSiteData().faqs);
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    return () => window.removeEventListener('site_data_updated', handleUpdate);
+  }, []);
 
   const categories = ['All', 'Mentorship', 'Pricing & Enrollment', 'Curriculum & Support', 'Expectations'];
 
-  const filteredFaqs = SITE_CONFIG.faqs.filter((faq) => {
+  const filteredFaqs = faqs.filter((faq) => {
     const matchesCat = selectedCategory === 'All' || faq.category === selectedCategory;
     const matchesSearch =
       faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||

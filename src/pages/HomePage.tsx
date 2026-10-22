@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SITE_CONFIG } from '../config/siteConfig';
+import { SITE_CONFIG, CurriculumModule } from '../config/siteConfig';
 import { useCountry } from '../context/CountryContext';
 import { NavPage } from '../components/Header';
-import { CountrySelector } from '../components/CountrySelector';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import { FaqAccordion } from '../components/FaqAccordion';
+import { getSiteData } from '../services/siteStore';
 import {
   ArrowRight,
   ShieldCheck,
@@ -27,8 +27,21 @@ interface HomePageProps {
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
-  const { countryType } = useCountry();
-  const previewFaqs = SITE_CONFIG.faqs.slice(0, 5);
+  const { countryType, setSelectedCountry } = useCountry();
+  const [siteData, setSiteData] = useState(getSiteData());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSiteData(getSiteData());
+    };
+    window.addEventListener('site_data_updated', handleUpdate);
+    return () => window.removeEventListener('site_data_updated', handleUpdate);
+  }, []);
+
+  const previewFaqs = siteData.faqs.slice(0, 5);
+  const previewCurriculum = siteData.curriculum.slice(0, 6);
+  const pkFormatted = siteData.pricing.pakistan.formatted;
+  const intlFormatted = siteData.pricing.international.formatted;
 
   const heroSlides = [
     {
@@ -90,12 +103,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             {/* Left Column: Headlines & Actions */}
             <div className="lg:col-span-7 flex flex-col space-y-6 text-left">
               
-              {/* Honest Category Tag */}
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--accent-text)]">
-                <span className="tracking-wide">Paid Educational Mentorship Program</span>
-                <span className="text-[var(--text-muted)]">·</span>
-                <span className="text-[var(--text-secondary)]">Not an Agency</span>
-              </div>
+
 
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.15] text-balance">
@@ -125,8 +133,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 >
                   <span>View Curriculum</span>
                 </button>
-
-                <WhatsAppButton label="Chat on WhatsApp" variant="outline" />
               </div>
 
               {/* Trust statement */}
@@ -135,11 +141,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <span className="font-medium text-[var(--text-secondary)]">{SITE_CONFIG.brand.trustStatement}</span>
                 <span>·</span>
                 <span>Zero false promises. Real production education.</span>
-              </div>
-
-              {/* Inline Country Selector Quick Strip */}
-              <div className="pt-4 mt-2 border-t border-[var(--border-subtle)]">
-                <CountrySelector variant="segmented" />
               </div>
             </div>
 
@@ -387,148 +388,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION E: WHO IS THIS MENTORSHIP FOR?
-      ========================================================================= */}
-      <section className="py-16 lg:py-24 bg-[var(--bg-surface-subtle)] border-b border-[var(--border-color)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-3xl mb-12">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)] block mb-2">
-              Audience Alignment
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--text-primary)] tracking-tight">
-              Who Is This Mentorship For?
-            </h2>
-            <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-3 leading-relaxed">
-              The mentorship is designed for individuals willing to put in the study time, practice their production craft, and build an authentic digital asset.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-            {[
-              {
-                title: "Complete Beginners",
-                desc: "Individuals exploring YouTube automation who want a clear, honest overview without misleading internet myths.",
-              },
-              {
-                title: "Aspiring Faceless Creators",
-                desc: "Creators who prefer not to appear on camera and want to build documentary, educational, or informational channels.",
-              },
-              {
-                title: "Digital Content Learners",
-                desc: "Students and professionals seeking practical skills in scriptwriting, video editing, and digital media production.",
-              },
-              {
-                title: "Freelancers & Editors",
-                desc: "Service providers looking to offer scriptwriting, editing, or thumbnail design services to YouTube creators.",
-              },
-              {
-                title: "Existing Channel Owners",
-                desc: "Creators with inconsistent upload schedules seeking a systematized production pipeline to publish with consistency.",
-              },
-              {
-                title: "International Students",
-                desc: "Learners in Pakistan (PKR 50,000) and worldwide ($200 USD) looking for structured, transparent digital education.",
-              },
-            ].map((profile, i) => (
-              <div
-                key={i}
-                className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] flex flex-col justify-between shadow-sm"
-              >
-                <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-[var(--text-primary)] mb-1.5">
-                    {profile.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-                    {profile.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Student Commitment Expectation */}
-          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs sm:text-sm text-[var(--text-secondary)] flex items-start gap-3 shadow-sm">
-            <Clock className="w-5 h-5 text-[var(--accent-text)] shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-[var(--text-primary)] mb-0.5">Student Commitment Required:</p>
-              <p>
-                Enrolling in this mentorship requires personal dedication to research topics, write drafts, review edits, and apply feedback. Students must be prepared to learn and implement the coursework actively.
-              </p>
-            </div>
-          </div>
 
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION F: MENTORSHIP OVERVIEW & WORKFLOW VISUAL
-      ========================================================================= */}
-      <section className="py-16 lg:py-24 border-b border-[var(--border-color)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <div className="lg:col-span-6">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)] block mb-2">
-                Program Structure
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--text-primary)] tracking-tight">
-                Mentorship Overview
-              </h2>
-              <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-4 leading-relaxed">
-                Next Gen Creators delivers a comprehensive educational framework centered on practical implementation. Rather than viewing passive video lectures, you will build actionable deliverables for each phase of video production.
-              </p>
-
-              <div className="mt-6 space-y-3 text-xs sm:text-sm text-[var(--text-secondary)]">
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0 mt-0.5" />
-                  <span><strong>10 Comprehensive Modules:</strong> From initial niche selection to long-term compliance and analytics.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0 mt-0.5" />
-                  <span><strong>Hands-On Deliverables:</strong> Draft real scripts, storyboard concepts, and design thumbnail wireframes.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0 mt-0.5" />
-                  <span><strong>Confirmed Details on Inquiry:</strong> Specific cohort schedules, pacing, and delivery format are confirmed directly via WhatsApp.</span>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <button
-                  type="button"
-                  onClick={() => onNavigate('mentorship')}
-                  className="px-6 py-3 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 text-white font-semibold text-sm transition-all shadow-md cursor-pointer"
-                >
-                  Explore the Mentorship Program
-                </button>
-                <WhatsAppButton label="Ask Questions on WhatsApp" variant="outline" />
-              </div>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className="rounded-2xl p-1.5 bg-gradient-to-b from-[var(--border-color)] to-[var(--bg-surface)] border border-[var(--border-color)] shadow-xl">
-                <div className="overflow-hidden rounded-[13px] aspect-[4/3] bg-[var(--bg-surface-subtle)] relative">
-                  <img
-                    src="/src/assets/images/workflow_production_desk_1792619638466.jpg"
-                    alt="Production planning desk with tablet storyboard, keyboard, and editing tools"
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-xs">
-                    <p className="font-semibold text-white">Systematic Production Workflows</p>
-                    <p className="text-[11px] text-slate-300">Transform chaotic video creation into repeatable, high-quality output.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
       {/* =========================================================================
           SECTION G: CURRICULUM PREVIEW
@@ -560,7 +422,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SITE_CONFIG.curriculumModules.slice(0, 6).map((module) => (
+            {previewCurriculum.map((module: CurriculumModule) => (
               <div
                 key={module.id}
                 className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-[var(--accent-primary)]/40 transition-all flex flex-col justify-between shadow-sm"
@@ -614,131 +476,143 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <section className="py-16 lg:py-24 border-b border-[var(--border-color)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
             <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-text)] block mb-2">
-              Transparent Investment
+              Transparent Tuition
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--text-primary)] tracking-tight">
               Official Mentorship Pricing
             </h2>
             <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-3 leading-relaxed text-balance">
-              Transparent, standardized tuition based on your country. No invented discounts, hidden surcharges, or fake price countdowns.
+              Transparent, standardized tuition with direct mentor guidance and practical deliverables. Zero artificial discounts, hidden surcharges, or fake countdowns.
             </p>
-
-            <div className="mt-6 flex justify-center">
-              <CountrySelector variant="segmented" />
-            </div>
           </div>
+
+
 
           {/* Pricing Cards Comparison */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             
             {/* Pakistan Card */}
             <div
-              className={`p-7 rounded-2xl border transition-all ${
+              onClick={() => setSelectedCountry('PK')}
+              className={`p-7 sm:p-8 rounded-2xl border transition-all duration-200 flex flex-col justify-between cursor-pointer ${
                 countryType === 'PK'
-                  ? 'bg-[var(--bg-surface)] border-[var(--accent-primary)] shadow-xl ring-2 ring-[var(--accent-primary)]/20'
-                  : 'bg-[var(--bg-surface)] border-[var(--border-color)] opacity-95'
+                  ? 'bg-[var(--bg-surface)] border-[var(--accent-primary)] shadow-md ring-2 ring-[var(--accent-primary)]/20'
+                  : 'bg-[var(--bg-surface)] border-[var(--border-color)] hover:border-[var(--accent-primary)]/40 shadow-xs'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-                  🇵🇰 Pakistan Rate
-                </span>
-                {countryType === 'PK' && (
-                  <span className="text-xs font-mono bg-[var(--accent-surface)] text-[var(--accent-text)] px-3 py-1 rounded-full border border-[var(--accent-primary)]/30 font-bold">
-                    Selected
+              <div>
+                  <div className="mb-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums tracking-tight">
+                      {pkFormatted}
+                    </span>
+                    <span className="text-xs font-medium text-[var(--text-muted)]">/ Full Program</span>
+                  </div>
+                  <span className="text-xs font-medium text-[var(--accent-text)] block mt-1">
+                    Complete 10-Module YouTube Automation Mentorship
                   </span>
-                )}
+                </div>
+
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] mb-6 leading-relaxed">
+                  Dedicated mentorship tuition for students residing in Pakistan. Verified local payment guidance (Bank Transfer / Raast) provided via WhatsApp.
+                </p>
+
+                <ul className="space-y-3 text-xs sm:text-sm text-[var(--text-secondary)] mb-8 border-t border-[var(--border-subtle)] pt-4">
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Full 10-Module YouTube Automation Framework</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Direct 1-on-1 Guidance & Inquiry via WhatsApp</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Hands-on homework reviews & niche audit deliverables</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Production checklists, SOPs, and script frameworks</span>
+                  </li>
+                </ul>
               </div>
 
-              <div className="mb-4">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums">
-                  PKR 50,000
-                </span>
-                <span className="text-sm text-[var(--accent-text)] font-bold block mt-1.5">
-                  Mentorship Fee: PKR 50,000
-                </span>
+              <div className="mt-8 pt-6 border-t border-[var(--border-subtle)]" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCountry('PK');
+                    onNavigate('enrollment');
+                  }}
+                  className="w-full py-3.5 px-4 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                >
+                  <span>Join Program</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
               </div>
-
-              <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
-                Official mentorship tuition for students residing in Pakistan. Verified local payment guidance provided via WhatsApp.
-              </p>
-
-              <ul className="space-y-3 text-sm text-[var(--text-secondary)] mb-8 border-t border-[var(--border-subtle)] pt-4">
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Full 10-Module YouTube Automation Framework</span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Direct Inquiry & Guidance via WhatsApp</span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Hands-on homework & practical deliverables</span>
-                </li>
-              </ul>
-
-              <WhatsAppButton
-                label="Ask About Enrollment (PKR 50,000)"
-                variant={countryType === 'PK' ? 'primary' : 'outline'}
-                className="w-full text-center py-3 text-sm font-semibold"
-              />
             </div>
 
             {/* International Card */}
             <div
-              className={`p-7 rounded-2xl border transition-all ${
+              onClick={() => setSelectedCountry('INTL')}
+              className={`p-7 sm:p-8 rounded-2xl border transition-all duration-200 flex flex-col justify-between cursor-pointer ${
                 countryType === 'INTL'
-                  ? 'bg-[var(--bg-surface)] border-[var(--accent-primary)] shadow-xl ring-2 ring-[var(--accent-primary)]/20'
-                  : 'bg-[var(--bg-surface)] border-[var(--border-color)] opacity-95'
+                  ? 'bg-[var(--bg-surface)] border-[var(--accent-primary)] shadow-md ring-2 ring-[var(--accent-primary)]/20'
+                  : 'bg-[var(--bg-surface)] border-[var(--border-color)] hover:border-[var(--accent-primary)]/40 shadow-xs'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-                  🌐 International Rate
-                </span>
-                {countryType === 'INTL' && (
-                  <span className="text-xs font-mono bg-[var(--accent-surface)] text-[var(--accent-text)] px-3 py-1 rounded-full border border-[var(--accent-primary)]/30 font-bold">
-                    Selected
+              <div>
+                  <div className="mb-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums tracking-tight">
+                      {intlFormatted}
+                    </span>
+                    <span className="text-xs font-medium text-[var(--text-muted)]">/ Full Program</span>
+                  </div>
+                  <span className="text-xs font-medium text-[var(--accent-text)] block mt-1">
+                    Complete 10-Module YouTube Automation Mentorship
                   </span>
-                )}
+                </div>
+
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] mb-6 leading-relaxed">
+                  Dedicated mentorship tuition for international creators outside Pakistan. Verified international transfer instructions provided via WhatsApp.
+                </p>
+
+                <ul className="space-y-3 text-xs sm:text-sm text-[var(--text-secondary)] mb-8 border-t border-[var(--border-subtle)] pt-4">
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Full 10-Module YouTube Automation Framework</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Direct 1-on-1 Guidance & Inquiry via WhatsApp</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Hands-on homework reviews & niche audit deliverables</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
+                    <span>Production checklists, SOPs, and script frameworks</span>
+                  </li>
+                </ul>
               </div>
 
-              <div className="mb-4">
-                <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] font-mono tabular-nums">
-                  $200 USD
-                </span>
-                <span className="text-sm text-[var(--accent-text)] font-bold block mt-1.5">
-                  Mentorship Fee: $200 USD
-                </span>
+              <div className="mt-8 pt-6 border-t border-[var(--border-subtle)]" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCountry('INTL');
+                    onNavigate('enrollment');
+                  }}
+                  className="w-full py-3.5 px-4 rounded-xl bg-[var(--accent-primary)] hover:opacity-90 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                >
+                  <span>Join Program</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
               </div>
-
-              <p className="text-sm sm:text-base text-[var(--text-secondary)] mb-6 leading-relaxed">
-                Official mentorship tuition for international students outside Pakistan. Verified international payment methods shared via WhatsApp.
-              </p>
-
-              <ul className="space-y-3 text-sm text-[var(--text-secondary)] mb-8 border-t border-[var(--border-subtle)] pt-4">
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Full 10-Module YouTube Automation Framework</span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Direct Inquiry & Guidance via WhatsApp</span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-text)] shrink-0" />
-                  <span>Hands-on homework & practical deliverables</span>
-                </li>
-              </ul>
-
-              <WhatsAppButton
-                label="Ask About Enrollment ($200 USD)"
-                variant={countryType === 'INTL' ? 'primary' : 'outline'}
-                className="w-full text-center"
-              />
             </div>
 
           </div>

@@ -1,9 +1,10 @@
 /**
  * Pricing and WhatsApp URL Generation Utilities
- * Decoupled pure logic tested with node:test
+ * Fully decoupled and synchronized with real-time siteStore state
  */
 
 import { SITE_CONFIG } from '../config/siteConfig';
+import { getSiteData } from '../services/siteStore';
 
 export type CountryCode = 'PK' | 'INTL' | 'UNKNOWN';
 
@@ -63,14 +64,14 @@ export function normalizeCountry(input: string | null | undefined): CountryCode 
   if (clean === 'PK' || clean === 'PAKISTAN') {
     return 'PK';
   }
-  if (clean === 'INTL' || clean === 'INTERNATIONAL' || clean === 'OTHER' || clean.length > 0 && clean !== 'UNKNOWN') {
+  if (clean === 'INTL' || clean === 'INTERNATIONAL' || clean === 'OTHER' || (clean.length > 0 && clean !== 'UNKNOWN')) {
     return 'INTL';
   }
   return 'UNKNOWN';
 }
 
 /**
- * Returns structured pricing details based on normalized country.
+ * Returns structured pricing details based on normalized country and real-time siteStore.
  */
 export function getPricing(countryInput: string | null | undefined): PricingResult {
   const countryType = normalizeCountry(countryInput);
@@ -78,18 +79,21 @@ export function getPricing(countryInput: string | null | undefined): PricingResu
   const isInternational = countryType === 'INTL';
   const isUnknown = countryType === 'UNKNOWN';
 
+  const siteData = getSiteData();
+  const pricingData = siteData.pricing;
+
   const pkPrice = {
-    amount: SITE_CONFIG.pricing.pakistan.amount,
-    currency: SITE_CONFIG.pricing.pakistan.currency,
-    formatted: SITE_CONFIG.pricing.pakistan.formatted,
-    label: SITE_CONFIG.pricing.pakistan.displayLabel,
+    amount: pricingData.pakistan.amount,
+    currency: pricingData.pakistan.currency,
+    formatted: pricingData.pakistan.formatted,
+    label: pricingData.pakistan.displayLabel || `Mentorship Fee: ${pricingData.pakistan.formatted}`,
   };
 
   const intlPrice = {
-    amount: SITE_CONFIG.pricing.international.amount,
-    currency: SITE_CONFIG.pricing.international.currency,
-    formatted: SITE_CONFIG.pricing.international.formatted,
-    label: SITE_CONFIG.pricing.international.displayLabel,
+    amount: pricingData.international.amount,
+    currency: pricingData.international.currency,
+    formatted: pricingData.international.formatted,
+    label: pricingData.international.displayLabel || `Mentorship Fee: ${pricingData.international.formatted}`,
   };
 
   let primaryDisplay: PricingResult['primaryDisplay'];
@@ -113,9 +117,9 @@ export function getPricing(countryInput: string | null | undefined): PricingResu
   } else {
     primaryDisplay = {
       amount: null,
-      currency: 'PKR / USD',
-      formatted: 'PKR 50,000 / $200 USD',
-      label: 'Mentorship Fee: PKR 50,000 (Pakistan) / $200 USD (International)',
+      currency: `${pkPrice.currency} / ${intlPrice.currency}`,
+      formatted: `${pkPrice.formatted} / ${intlPrice.formatted}`,
+      label: `Mentorship Fee: ${pkPrice.formatted} (Pakistan) / ${intlPrice.formatted} (International)`,
       showBoth: true,
     };
   }
@@ -132,17 +136,21 @@ export function getPricing(countryInput: string | null | undefined): PricingResu
 }
 
 /**
- * Returns the exact prefilled message required by the business specifications.
+ * Returns the exact prefilled message required by business specifications, dynamically computed with current price.
  */
 export function getWhatsAppMessage(countryInput: string | null | undefined): string {
   const type = normalizeCountry(countryInput);
+  const siteData = getSiteData();
+  const pkFormatted = siteData.pricing.pakistan.formatted;
+  const intlFormatted = siteData.pricing.international.formatted;
+
   if (type === 'PK') {
-    return SITE_CONFIG.whatsappMessages.pakistan;
+    return siteData.whatsappMessages?.pakistan || `Assalam-o-Alaikum! I'm interested in joining the Next Gen Creators YouTube Automation Mentorship. I understand the mentorship fee is ${pkFormatted}. Please share the curriculum and enrollment process.`;
   }
   if (type === 'INTL') {
-    return SITE_CONFIG.whatsappMessages.international;
+    return siteData.whatsappMessages?.international || `Hello Next Gen Creators! I'm interested in your YouTube Automation Mentorship Program. I understand the mentorship fee is ${intlFormatted}. Please share the curriculum and enrollment process.`;
   }
-  return SITE_CONFIG.whatsappMessages.unknown;
+  return siteData.whatsappMessages?.unknown || `Hello Next Gen Creators! I'm interested in your YouTube Automation Mentorship Program. Please confirm the applicable mentorship fee and share the curriculum and enrollment process.`;
 }
 
 /**
@@ -155,5 +163,8 @@ export function buildWhatsAppUrl(
   const baseMessage = getWhatsAppMessage(countryInput);
   const finalMessage = customSuffix ? `${baseMessage}\n\n${customSuffix}` : baseMessage;
   const encoded = encodeURIComponent(finalMessage);
-  return `${SITE_CONFIG.contact.whatsappBaseUrl}?text=${encoded}`;
+  
+  const siteData = getSiteData();
+  const baseUrl = siteData.socialLinks?.whatsapp || SITE_CONFIG.contact.whatsappBaseUrl;
+  return `${baseUrl}?text=${encoded}`;
 }

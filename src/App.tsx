@@ -18,19 +18,44 @@ import { AdminPortal } from './pages/AdminPortal';
 import { ShieldAlert } from 'lucide-react';
 
 export default function App() {
-  const pathname = window.location.pathname;
+  const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
+  const [currentHash, setCurrentHash] = useState(() => window.location.hash.toLowerCase());
 
-  // Secret Admin Portal route at /admin7
-  if (pathname === '/admin7') {
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+      setCurrentHash(window.location.hash.toLowerCase());
+    };
+    window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('popstate', handleLocationChange);
+    return () => {
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
+
+  const isAdmin7 = currentPath === '/admin7' || currentHash === '#admin7' || currentHash === '#/admin7';
+  const isAdminForbidden = (currentPath === '/admin' || currentPath.startsWith('/admin/') || currentHash === '#admin' || currentHash === '#/admin') && !isAdmin7;
+
+  // Secret Admin Portal route at /admin7 or #admin7
+  if (isAdmin7) {
     return (
       <ThemeProvider>
-        <AdminPortal onExit={() => { window.location.pathname = '/'; }} />
+        <AdminPortal
+          onExit={() => {
+            if (window.location.hash.includes('admin7')) {
+              window.location.hash = '';
+            } else {
+              window.location.pathname = '/';
+            }
+          }}
+        />
       </ThemeProvider>
     );
   }
 
   // Firewall restriction on /admin (shows 404 / Access Denied)
-  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+  if (isAdminForbidden) {
     return (
       <ThemeProvider>
         <div className="min-h-screen bg-[var(--bg-canvas)] flex items-center justify-center p-4">
@@ -43,12 +68,18 @@ export default function App() {
             <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
               Firewall restriction active. The /admin pathway is hidden and restricted. Authorized administration requires the /admin7 command path.
             </p>
-            <a
-              href="/"
+            <button
+              type="button"
+              onClick={() => {
+                window.location.hash = '';
+                if (window.location.pathname !== '/') {
+                  window.location.pathname = '';
+                }
+              }}
               className="mt-6 inline-block px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] text-white text-xs font-semibold shadow-md cursor-pointer hover:opacity-90"
             >
               Return to Homepage
-            </a>
+            </button>
           </div>
         </div>
       </ThemeProvider>
