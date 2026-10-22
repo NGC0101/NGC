@@ -14,8 +14,47 @@ import { FaqPage } from './pages/FaqPage';
 import { ContactPage } from './pages/ContactPage';
 import { EnrollmentPage } from './pages/EnrollmentPage';
 import { LegalPage } from './pages/LegalPage';
+import { AdminPortal } from './pages/AdminPortal';
+import { ShieldAlert } from 'lucide-react';
 
 export default function App() {
+  const pathname = window.location.pathname;
+
+  // Secret Admin Portal route at /admin7
+  if (pathname === '/admin7') {
+    return (
+      <ThemeProvider>
+        <AdminPortal onExit={() => { window.location.pathname = '/'; }} />
+      </ThemeProvider>
+    );
+  }
+
+  // Firewall restriction on /admin (shows 404 / Access Denied)
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen bg-[var(--bg-canvas)] flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-red-600" />
+            <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/35 flex items-center justify-center mx-auto mb-4 text-red-500">
+              <ShieldAlert className="w-8 h-8" />
+            </div>
+            <h1 className="text-xl font-black text-[var(--text-primary)]">404 · Access Denied</h1>
+            <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
+              Firewall restriction active. The /admin pathway is hidden and restricted. Authorized administration requires the /admin7 command path.
+            </p>
+            <a
+              href="/"
+              className="mt-6 inline-block px-5 py-2.5 rounded-xl bg-[var(--accent-primary)] text-white text-xs font-semibold shadow-md cursor-pointer hover:opacity-90"
+            >
+              Return to Homepage
+            </a>
+          </div>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
   const [currentPage, setCurrentPage] = useState<NavPage>(() => {
     try {
       const hash = window.location.hash.replace('#', '').toLowerCase();

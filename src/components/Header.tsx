@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         {/* Top Bar Contract: Zone 1, Zone 2, Zone 3 */}
         <div className="flex items-center justify-between gap-4 lg:gap-8 h-18">
           
-          {/* Zone 1: Single text element wordmark with logo treatment */}
+          {/* Zone 1: Original Site Brand Logo & Name */}
           <button
             type="button"
             onClick={() => handleNavClick('home')}

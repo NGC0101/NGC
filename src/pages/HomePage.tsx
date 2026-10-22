@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SITE_CONFIG } from '../config/siteConfig';
 import { useCountry } from '../context/CountryContext';
 import { NavPage } from '../components/Header';
@@ -27,8 +28,49 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { countryType } = useCountry();
-
   const previewFaqs = SITE_CONFIG.faqs.slice(0, 5);
+
+  const heroSlides = [
+    {
+      url: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop',
+      title: 'Faceless Production Pipeline',
+      desc: 'Scriptwriting, audio planning, visual assembly, and thumbnail strategy.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=1200&auto=format&fit=crop',
+      title: 'Professional Voice & Audio Engineering',
+      desc: 'Recording clear narration, pacing sound design, and audio mastering.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1533750349077-cdcd106d2312?q=80&w=1200&auto=format&fit=crop',
+      title: 'Digital Content Creation Desk',
+      desc: 'Organizing video assets, timelines, and high-retention editing.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
+      title: 'Systematic Topic Research & Strategy',
+      desc: 'Evaluating search curiosity, audience intent, and 30-day calendars.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
+      title: 'Creator Workflow & Collaboration',
+      desc: 'Building standard operating procedures and managing production milestones.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
+      title: 'Analytics & Data-Driven Improvement',
+      desc: 'Auditing click-through rates, audience retention, and recommendation signals.'
+    }
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
 
   return (
     <div className="flex flex-col min-h-screen transition-colors">
@@ -101,35 +143,56 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Right Column: Hero Visual Asset */}
+            {/* Right Column: Hero Visual Asset Slideshow */}
             <div className="lg:col-span-5">
               <div className="relative rounded-2xl p-1.5 bg-gradient-to-b from-[var(--border-color)] to-[var(--bg-surface)] border border-[var(--border-color)] shadow-xl">
                 <div className="overflow-hidden rounded-[13px] relative aspect-[16/10] bg-[var(--bg-surface-subtle)]">
-                  <img
-                    src="/src/assets/images/hero_creator_workspace_1792619638464.jpg"
-                    alt="Modern video editing workstation showing timeline and audio workflows for faceless channel production"
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    referrerPolicy="no-referrer"
-                  />
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={currentSlide}
+                      src={heroSlides[currentSlide].url}
+                      alt={heroSlides[currentSlide].title}
+                      initial={{ opacity: 0, scale: 1.02 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.6, ease: 'easeInOut' }}
+                      className="w-full h-full object-cover absolute inset-0"
+                      referrerPolicy="no-referrer"
+                    />
+                  </AnimatePresence>
                   
                   {/* Subtle contrast scrim */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none z-10" />
 
                   {/* On-image caption badge */}
-                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-xs">
+                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 text-xs z-20">
                     <div className="flex items-center justify-between text-slate-200">
                       <span className="font-semibold text-white flex items-center gap-1.5">
                         <Workflow className="w-3.5 h-3.5 text-cyan-400" />
-                        Faceless Production Pipeline
+                        {heroSlides[currentSlide].title}
                       </span>
                       <span className="font-mono text-cyan-300 text-[11px] tabular-nums font-semibold">
-                        {countryType === 'PK' ? 'PKR 50,000' : countryType === 'INTL' ? '$200 USD' : 'PKR 50k / $200'}
+                        {currentSlide + 1} / {heroSlides.length}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-300 mt-1 line-clamp-1">
-                      Scriptwriting, audio planning, visual assembly, and thumbnail strategy.
+                      {heroSlides[currentSlide].desc}
                     </p>
+                  </div>
+
+                  {/* Slide Indicators */}
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
+                    {heroSlides.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCurrentSlide(idx)}
+                        className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                          currentSlide === idx ? 'w-5 bg-cyan-400' : 'w-1.5 bg-white/40 hover:bg-white/70'
+                        }`}
+                        aria-label={`Go to slide ${idx + 1}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
